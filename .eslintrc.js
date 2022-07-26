@@ -28,8 +28,6 @@ module.exports = {
     'use-isnan': 'error',
     'valid-typeof': 'error',
     'no-empty': 'error',
-    'sort-imports': 'warn',
-    'sort-keys': 'warn',
     'prefer-object-has-own': 'error',
     'lines-between-class-members': 'warn',
     'spaced-comment': 'warn',
