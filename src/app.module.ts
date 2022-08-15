@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
+import { User } from './users/users.entity';
 
 @Module({
   imports: [
@@ -15,12 +16,12 @@ import { OrdersModule } from './orders/orders.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get('DBHOST'),
-        port: config.get('DBPORT'),
-        username: config.get('DBUSERNAME'),
-        password: config.get('DBPASSWORD'),
-        database: 'nest',
-        entities: [],
+        host: config.get('DB_HOST'),
+        port: config.get('DB_PORT'),
+        username: config.get('DB_USERNAME'),
+        password: config.get('DB_PASSWORD'),
+        database: config.get('DB_NAME'),
+        entities: [User],
         synchronize: config.get('NODE_ENV') !== 'production',
       }),
     }),
