@@ -1,3 +1,4 @@
+import { Product } from 'src/products/products.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,6 +9,7 @@ import {
   ManyToMany,
   JoinTable,
   Check,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -54,10 +56,13 @@ export class User extends BaseEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToMany(() => User, user => user.followers, { onDelete: 'CASCADE', eager: true })
+  @ManyToMany(() => User, user => user.followers, { onDelete: 'CASCADE' })
   @JoinTable({ joinColumn: { name: 'follower_id' }, inverseJoinColumn: { name: 'following_id' } })
   followings: User[];
 
   @ManyToMany(() => User, user => user.followings, { onDelete: 'CASCADE' })
   followers: User[];
+
+  @OneToMany(() => Product, product => product.author)
+  products: Product[];
 }

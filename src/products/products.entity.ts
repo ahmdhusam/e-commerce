@@ -1,4 +1,5 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { User } from 'src/users/users.entity';
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 export enum Category {}
 
@@ -18,4 +19,10 @@ export class Product extends BaseEntity {
 
   @Column({ enum: Category })
   category: Category;
+
+  @Column({ type: 'smallint' })
+  quantity: number;
+
+  @ManyToOne(() => User, user => user.products, { onDelete: 'CASCADE' })
+  author: User;
 }
