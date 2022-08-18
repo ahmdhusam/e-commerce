@@ -1,3 +1,4 @@
+import { Cart } from 'src/cart/cart.entity';
 import { Product } from 'src/products/products.entity';
 import {
   Entity,
@@ -65,4 +66,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Product, product => product.author)
   products: Product[];
+
+  @OneToMany(() => Cart, cart => cart.owner)
+  cart: Cart[];
 }

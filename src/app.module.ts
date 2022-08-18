@@ -9,6 +9,7 @@ import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { User } from './users/users.entity';
 import { Product } from './products/products.entity';
+import { Cart } from './cart/cart.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { Product } from './products/products.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User, Product],
+        entities: [User, Product, Cart],
         synchronize: config.get('NODE_ENV') !== 'production',
       }),
     }),
