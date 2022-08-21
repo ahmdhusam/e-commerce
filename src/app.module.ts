@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { Orders } from './orders/orders.entity';
 import { Cart } from './cart/cart.entity';
 import { User } from './users/users.entity';
 import { Product } from './products/products.entity';
@@ -23,7 +24,7 @@ import { OrdersModule } from './orders/orders.module';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User, Product, Cart],
+        entities: [User, Product, Cart, Orders],
         synchronize: config.get('NODE_ENV') !== 'production',
       }),
     }),
