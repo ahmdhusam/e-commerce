@@ -38,15 +38,15 @@ export class User extends BaseEntity {
   @Column({ name: 'birth_date', type: 'date' })
   birthDate: Date;
 
-  @Column({ length: 141 })
+  @Column({ length: 141, default: '' })
   about: string;
 
   @Check(`"lat" BETWEEN -90 AND 90`)
-  @Column({ type: 'real' })
+  @Column({ type: 'real', nullable: true })
   lat: number;
 
   @Check(`"lng" BETWEEN -180 AND 180`)
-  @Column({ type: 'real' })
+  @Column({ type: 'real', nullable: true })
   lng: number;
 
   @Column({ length: 61 })
