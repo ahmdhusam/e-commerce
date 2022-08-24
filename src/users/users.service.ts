@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUser } from 'src/auth/dtos';
 import { Repository } from 'typeorm';
-import { User } from './users.entity';
 import * as bcrypt from 'bcrypt';
+import { User } from './users.entity';
+import { CreateUser } from 'src/auth/dtos';
 
 @Injectable()
 export class UsersService {
@@ -18,5 +18,12 @@ export class UsersService {
         if (err.message.includes('duplicate')) throw new BadRequestException('Email in use');
         else throw new BadRequestException('18 is the minimum age to register');
       });
+  }
+
+  getUser(userData: Partial<User>): Promise<User> {
+    // @ts-ignore
+    return this.userRepo.findOneByOrFail(userData).catch(() => {
+      throw new NotFoundException('user Not Found');
+    });
   }
 }

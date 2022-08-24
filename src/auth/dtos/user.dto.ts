@@ -18,4 +18,7 @@ export class User {
 
   @Expose()
   lng: number;
+
+  @Expose()
+  access_token?: string;
 }
