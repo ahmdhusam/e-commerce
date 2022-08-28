@@ -10,7 +10,7 @@ export class AuthService {
   constructor(private readonly usersService: UsersService, private readonly JwtService: JwtService) {}
 
   async validateUser({ email, password }: UserLogin): Promise<User & { access_token: string }> {
-    const user = await this.usersService.getUser({ email: email });
+    const user = await this.usersService.getUserBy({ email: email });
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) throw new ForbiddenException('password incorrect');

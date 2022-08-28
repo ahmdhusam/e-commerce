@@ -15,13 +15,12 @@ export class UsersService {
       .create(userData)
       .save()
       .catch((err: Error) => {
-        if (err.message.includes('duplicate')) throw new BadRequestException('Email in use');
+        if (err.message.includes('duplicate')) throw new BadRequestException('Email Or username in use');
         else throw new BadRequestException('18 is the minimum age to register');
       });
   }
 
-  getUser(userData: Partial<User>): Promise<User> {
-    // @ts-ignore
+  getUserBy(userData: Partial<Pick<User, 'id' | 'email' | 'username'>>): Promise<User> {
     return this.userRepo.findOneByOrFail(userData).catch(() => {
       throw new NotFoundException('user Not Found');
     });
