@@ -14,6 +14,6 @@ export class ProductsController {
 
   @Post('create-product')
   createProduct(@CurrentUser() currentUser: User, @Body() productData: ProductData): Promise<ProductSerialize> {
-    return this.productsService.createProduct(currentUser, productData);
+    return this.productsService.create(currentUser, productData);
   }
 }

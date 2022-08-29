@@ -1,4 +1,13 @@
-import { IsString, IsNumber, Min, Max, Length, IsEmail, IsDateString, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  Length,
+  IsEmail,
+  IsDateString,
+  IsOptional,
+  IsLatitude,
+  IsLongitude,
+} from 'class-validator';
 import { Trim, ToLowerCase } from 'src/libs';
 
 export class CreateUser {
@@ -23,14 +32,12 @@ export class CreateUser {
   @IsDateString()
   birthDate: Date;
 
-  @Max(90)
-  @Min(-90)
+  @IsLatitude({ message: 'lat must be a latitude' })
   @IsNumber()
   @IsOptional()
   lat: number;
 
-  @Max(180)
-  @Min(-180)
+  @IsLongitude({ message: 'lng must be a longitude' })
   @IsNumber()
   @IsOptional()
   lng: number;

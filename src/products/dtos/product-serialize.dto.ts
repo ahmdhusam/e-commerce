@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { UserSerialize } from 'src/auth/dtos';
+import { UserSerialize } from 'src/users/dtos';
 import { Category } from '../products.entity';
 
 export class ProductSerialize {

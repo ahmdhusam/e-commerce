@@ -1,8 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { UserSerialize } from 'src/auth/dtos';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentUser } from './decorators';
+import { UserSerialize } from './dtos';
 import { User } from './users.entity';
 import { UsersService } from './users.service';
 
@@ -19,6 +19,6 @@ export class UsersController {
 
   @Get(':username')
   getUser(@Param('username') username: string): Promise<UserSerialize> {
-    return this.usersService.getUserBy({ username });
+    return this.usersService.getOneBy({ username });
   }
 }

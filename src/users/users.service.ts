@@ -9,7 +9,7 @@ import { CreateUser } from 'src/auth/dtos';
 export class UsersService {
   constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
 
-  async createUser(userData: CreateUser): Promise<User> {
+  async create(userData: CreateUser): Promise<User> {
     userData.password = await bcrypt.hash(userData.password, 12);
     return this.userRepo
       .create(userData)
@@ -20,7 +20,7 @@ export class UsersService {
       });
   }
 
-  getUserBy(userData: Partial<Pick<User, 'id' | 'email' | 'username'>>): Promise<User> {
+  getOneBy(userData: Partial<Pick<User, 'id' | 'email' | 'username'>>): Promise<User> {
     return this.userRepo.findOneByOrFail(userData).catch(() => {
       throw new NotFoundException('user Not Found');
     });

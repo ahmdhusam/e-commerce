@@ -9,7 +9,7 @@ import { Product } from './products.entity';
 export class ProductsService {
   constructor(@InjectRepository(Product) private readonly productsRepo: Repository<Product>) {}
 
-  createProduct(author: User, productData: ProductData): Promise<Product> {
+  create(author: User, productData: ProductData): Promise<Product> {
     return this.productsRepo.create({ ...productData, author }).save();
   }
 }
