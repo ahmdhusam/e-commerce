@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, BadRequestException, Get } from '@nestjs/common';
 import { isUUID } from 'class-validator';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
@@ -32,5 +32,12 @@ export class ProductsController {
     if (!isUUID(productId, '4')) throw new BadRequestException('product id must be a UUID');
 
     return this.productsService.delete(productId, currentUser);
+  }
+
+  @Get(':productId')
+  getProduct(@Param('productId') productId: string): Promise<ProductSerialize> {
+    if (!isUUID(productId, '4')) throw new BadRequestException('product id must be a UUID');
+
+    return this.productsService.getOneById(productId);
   }
 }
