@@ -22,6 +22,15 @@ export class ProductsService {
     return product.save();
   }
 
+  async delete(productId: string, user: User): Promise<Product> {
+    const product = await this.getOneById(productId);
+    this.isAuthorized(user, product);
+
+    await product.remove();
+
+    return product;
+  }
+
   isAuthorized(user: User, product: Product): void {
     if (product.author.id !== user.id) throw new ForbiddenException('unauthorized');
   }
