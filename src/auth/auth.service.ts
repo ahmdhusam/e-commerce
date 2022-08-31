@@ -1,6 +1,5 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { UserLogin } from './dtos';
@@ -12,8 +11,7 @@ export class AuthService {
   async validateUser({ email, password }: UserLogin): Promise<User & { access_token: string }> {
     const user = await this.usersService.getOneBy({ email: email });
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) throw new ForbiddenException('password incorrect');
+    await this.usersService.validatePassword(user, password);
 
     return Object.assign(user, this.makeToken(user.id, user.email));
   }
