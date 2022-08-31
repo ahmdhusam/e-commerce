@@ -1,8 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentUser } from './decorators';
-import { UserSerialize } from './dtos';
+import { UpdateUser, UserSerialize } from './dtos';
 import { User } from './users.entity';
 import { UsersService } from './users.service';
 
@@ -20,5 +20,10 @@ export class UsersController {
   @Get(':username')
   getUser(@Param('username') username: string): Promise<UserSerialize> {
     return this.usersService.getOneBy({ username });
+  }
+
+  @Put('update-profile')
+  updateUser(@CurrentUser() currentUser: User, @Body() userData: UpdateUser): Promise<UserSerialize> {
+    return this.usersService.update(currentUser, userData);
   }
 }

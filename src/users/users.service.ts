@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './users.entity';
 import { CreateUser } from 'src/auth/dtos';
+import { UpdateUser } from './dtos';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,11 @@ export class UsersService {
         if (err.message.includes('duplicate')) throw new BadRequestException('Email Or username in use');
         else throw new BadRequestException('18 is the minimum age to register');
       });
+  }
+
+  update(currentUser: User, userData: UpdateUser): Promise<User> {
+    Object.assign(currentUser, userData);
+    return currentUser.save();
   }
 
   getOneBy(userData: Partial<Pick<User, 'id' | 'email' | 'username'>>): Promise<User> {
