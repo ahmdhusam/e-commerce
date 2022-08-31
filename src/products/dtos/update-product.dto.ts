@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max } from 'class-validator';
-import { Trim } from 'src/libs';
+import { ParsePrice, Trim } from 'src/libs';
 import { Category } from '../products.entity';
 
 export class UpdateProduct {
@@ -19,6 +19,7 @@ export class UpdateProduct {
   @IsOptional()
   description?: string;
 
+  @ParsePrice()
   @Max(999999)
   @IsPositive()
   @IsNumber()

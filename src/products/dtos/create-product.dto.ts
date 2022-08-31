@@ -1,5 +1,5 @@
-import { IsEnum, IsNumber, IsPositive, IsString, Length, Max } from 'class-validator';
-import { Trim } from 'src/libs';
+import { IsEnum, IsInt, IsNumber, IsPositive, IsString, Length, Max } from 'class-validator';
+import { ParsePrice, Trim } from 'src/libs';
 import { Category } from '../products.entity';
 
 export class ProductData {
@@ -13,11 +13,13 @@ export class ProductData {
   @IsString()
   description: string;
 
+  @ParsePrice()
   @Max(999999)
   @IsPositive()
   @IsNumber()
   price: number;
 
+  @IsInt()
   @IsPositive()
   @IsNumber()
   quantity: number;
