@@ -23,6 +23,29 @@ export class ProductsService {
     return product.save();
   }
 
+  async productToCart(productId: string, quantity: number): Promise<Product> {
+    const product = await this.getOneById(productId);
+    if (quantity > product.quantity)
+      throw new BadRequestException('the quantity should be smaller than the quantity of the product');
+
+    product.quantity -= quantity;
+    product.inOrder += quantity;
+
+    return product.save();
+  }
+
+  async reverseFromCart(productId: string, quantity: number): Promise<Product> {
+    const product = await this.getOneById(productId);
+    if (quantity > product.inOrder) throw new BadRequestException();
+
+    product.quantity += quantity;
+    product.inOrder -= quantity;
+
+    return product.save().catch(() => {
+      throw new BadRequestException();
+    });
+  }
+
   async delete(productId: string, user: User): Promise<Product> {
     const product = await this.getOneById(productId);
     this.isAuthorized(user, product);

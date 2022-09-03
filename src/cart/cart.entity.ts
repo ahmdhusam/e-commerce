@@ -1,10 +1,25 @@
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from 'src/users/users.entity';
 import { Product } from 'src/products/products.entity';
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { Orders } from 'src/orders/orders.entity';
 
 @Entity()
 export class Cart extends BaseEntity {
+  @PrimaryColumn({ name: 'owner_id' })
+  ownerId: string;
+
+  @PrimaryColumn({ name: 'product_id' })
+  productId: string;
+
   @Column()
   quantity: number;
 
@@ -14,12 +29,12 @@ export class Cart extends BaseEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @PrimaryColumn({ name: 'ownerId' })
   @ManyToOne(() => User, user => user.cart, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
-  @PrimaryColumn({ name: 'productId' })
   @ManyToOne(() => Product, product => product.carts, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'product_id' })
   product: Product;
 
   @ManyToOne(() => Orders, orders => orders.cart, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
