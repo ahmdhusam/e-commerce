@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -20,6 +21,7 @@ export class Cart extends BaseEntity {
   @PrimaryColumn({ name: 'product_id' })
   productId: string;
 
+  @Check('quantity > 0')
   @Column()
   quantity: number;
 

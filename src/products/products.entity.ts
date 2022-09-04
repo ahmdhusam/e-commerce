@@ -9,6 +9,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  Check,
 } from 'typeorm';
 
 export enum Category {}
@@ -24,12 +25,14 @@ export class Product extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
+  @Check('price > -1')
   @Column({ type: 'real', unsigned: true })
   price: number;
 
   @Column({ type: 'enum', enum: Category })
   category: Category;
 
+  @Check('quantity > 0')
   @Column({ type: 'smallint', unsigned: true })
   quantity: number;
 
