@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from 'src/products/products.entity';
 import { ProductsService } from 'src/products/products.service';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
@@ -11,6 +12,18 @@ export class CartService {
     @InjectRepository(Cart) private readonly cartRepo: Repository<Cart>,
     private readonly productService: ProductsService,
   ) {}
+
+  async cart(user: User, limit: number, skip: number): Promise<Product[]> {
+    return this.cartRepo
+      .createQueryBuilder('cart')
+      .select('id, title, description, price, category, cart.quantity as quantity')
+      .innerJoin(Product, 'product', 'cart.product_id = product.id')
+      .where('cart.owner_id = :ownerId', { ownerId: user.id })
+      .orderBy('cart.created_at', 'ASC')
+      .limit(Math.min(limit, 30))
+      .offset(skip)
+      .getRawMany();
+  }
 
   getOne(ownerId: string, productId: string, relations: ('owner' | 'product' | 'order')[] = []): Promise<Cart | null> {
     return this.cartRepo.findOneOrFail({ where: { ownerId, productId }, relations }).catch(() => {
