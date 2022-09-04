@@ -36,9 +36,31 @@ export class CartService {
       await this.update(to.id, productId, quantity);
     } catch (e) {
       // Create a new one if it doesn't exist
-      if (e instanceof Error && !e.message.includes('product not found in cart')) throw e;
-      await this.create({ ownerId: to.id, productId, quantity });
+      if (e instanceof Error && e.message.includes('product not found in cart')) {
+        await this.create({ ownerId: to.id, productId, quantity });
+        return;
+      }
+
+      throw e;
     }
+  }
+
+  async reverse(ownerId: string, productId: string, quantity: number): Promise<Cart> {
+    const cartItem = await this.getOne(ownerId, productId);
+
+    if (quantity > cartItem.quantity) throw new BadRequestException();
+
+    if (cartItem.quantity === quantity) {
+      return this.delete(ownerId, productId);
+    }
+    await this.productService.reverseFromCart(productId, quantity);
+
+    cartItem.quantity -= quantity;
+
+    return cartItem.save().catch(async () => {
+      await this.productService.productToCart(productId, quantity);
+      throw new BadGatewayException();
+    });
   }
 
   async create(cartData: Pick<Cart, 'ownerId' | 'productId' | 'quantity'>): Promise<Cart> {

@@ -17,6 +17,10 @@ import { User } from 'src/users/users.entity';
 import { CartService } from './cart.service';
 import { CartOptionsDto } from './dtos';
 
+interface Message {
+  message: 'successful' | 'Failed';
+}
+
 @UseAuthGuard()
 @Controller('cart')
 export class CartController {
@@ -27,11 +31,23 @@ export class CartController {
     @CurrentUser() currentUser: User,
     @Param('id', new ParseUUIDPipe({ version: '4' })) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
-  ): Promise<{ message: string }> {
+  ): Promise<Message> {
     if (!isPositive(quantity)) throw new BadRequestException('quantity must be a positive number');
 
     await this.cartService.add(currentUser, productId, quantity);
-    return { message: 'success' };
+    return { message: 'successful' };
+  }
+
+  @Get('reverse/:id')
+  async reverseFromCart(
+    @CurrentUser() currentUser: User,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) productId: string,
+    @Query('quantity', ParseIntPipe) quantity: number,
+  ): Promise<Message> {
+    if (!isPositive(quantity)) throw new BadRequestException('quantity must be a positive number');
+
+    await this.cartService.reverse(currentUser.id, productId, quantity);
+    return { message: 'successful' };
   }
 
   @UseSerialize(ProductSerialize)
@@ -47,9 +63,9 @@ export class CartController {
   async delete(
     @CurrentUser() currentUser: User,
     @Param('id', new ParseUUIDPipe({ version: '4' })) productId: string,
-  ): Promise<{ message: string }> {
+  ): Promise<Message> {
     await this.cartService.delete(currentUser.id, productId);
 
-    return { message: 'success' };
+    return { message: 'successful' };
   }
 }

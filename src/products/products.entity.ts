@@ -32,7 +32,7 @@ export class Product extends BaseEntity {
   @Column({ type: 'enum', enum: Category })
   category: Category;
 
-  @Check('quantity > 0')
+  @Check('quantity > -1')
   @Column({ type: 'smallint', unsigned: true })
   quantity: number;
 
