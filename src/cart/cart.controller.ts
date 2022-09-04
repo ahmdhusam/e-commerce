@@ -1,4 +1,13 @@
-import { BadRequestException, Controller, Get, ParseIntPipe, ParseUUIDPipe, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Query,
+} from '@nestjs/common';
 import { isPositive } from 'class-validator';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
@@ -13,10 +22,10 @@ import { CartOptionsDto } from './dtos';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Get('add')
+  @Get('add/:id')
   async addToCart(
     @CurrentUser() currentUser: User,
-    @Query('product-id', new ParseUUIDPipe({ version: '4' })) productId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
   ): Promise<{ message: string }> {
     if (!isPositive(quantity)) throw new BadRequestException('quantity must be a positive number');
@@ -32,5 +41,15 @@ export class CartController {
     @Query() { limit = 10, skip = 0 }: CartOptionsDto,
   ): Promise<ProductSerialize[]> {
     return this.cartService.cart(currentUser, limit, skip);
+  }
+
+  @Delete(':id')
+  async delete(
+    @CurrentUser() currentUser: User,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) productId: string,
+  ): Promise<{ message: string }> {
+    await this.cartService.delete(currentUser.id, productId);
+
+    return { message: 'success' };
   }
 }

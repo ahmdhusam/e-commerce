@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/products/products.entity';
 import { ProductsService } from 'src/products/products.service';
@@ -61,6 +61,18 @@ export class CartService {
     return cartItem.save().catch(async () => {
       await this.productService.reverseFromCart(productId, quantity);
       throw new BadRequestException("can't update cart");
+    });
+  }
+
+  async delete(ownerId: string, productId: string): Promise<Cart> {
+    const cartItem = await this.getOne(ownerId, productId);
+
+    await this.productService.reverseFromCart(productId, cartItem.quantity);
+
+    return cartItem.remove().catch(async () => {
+      await this.productService.productToCart(productId, cartItem.quantity);
+
+      throw new BadGatewayException();
     });
   }
 }
