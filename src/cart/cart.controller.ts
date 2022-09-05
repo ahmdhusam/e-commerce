@@ -56,7 +56,7 @@ export class CartController {
     @CurrentUser() currentUser: User,
     @Query() { limit = 10, skip = 0 }: CartOptionsDto,
   ): Promise<ProductSerialize[]> {
-    return this.cartService.cart(currentUser, limit, skip);
+    return this.cartService.cart(currentUser, Math.min(limit, 30), skip);
   }
 
   @Delete(':id')

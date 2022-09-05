@@ -25,6 +25,9 @@ export class Cart extends BaseEntity {
   @Column()
   quantity: number;
 
+  @Column({ name: 'in_order', default: false })
+  inOrder: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -19,14 +19,15 @@ export class CartService {
       .select('id, title, description, price, category, cart.quantity as quantity')
       .innerJoin(Product, 'product', 'cart.product_id = product.id')
       .where('cart.owner_id = :ownerId', { ownerId: user.id })
+      .andWhere('cart.in_order = false')
       .orderBy('cart.created_at', 'ASC')
-      .limit(Math.min(limit, 30))
+      .limit(limit)
       .offset(skip)
       .getRawMany();
   }
 
   getOne(ownerId: string, productId: string, relations: ('owner' | 'product' | 'order')[] = []): Promise<Cart | null> {
-    return this.cartRepo.findOneOrFail({ where: { ownerId, productId }, relations }).catch(() => {
+    return this.cartRepo.findOneOrFail({ where: { ownerId, productId, inOrder: false }, relations }).catch(() => {
       throw new NotFoundException('product not found in cart');
     });
   }
