@@ -1,7 +1,7 @@
 import { Length, IsString } from 'class-validator';
 import { Trim } from 'src/libs';
 
-export class ChangePassword {
+export class ChangePasswordDto {
   @Length(8, 60)
   @Trim()
   @IsString()

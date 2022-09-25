@@ -1,7 +1,7 @@
 import { IsEmail, IsString, Length } from 'class-validator';
 import { ToLowerCase, Trim } from 'src/libs';
 
-export class UserLogin {
+export class UserLoginDto {
   @ToLowerCase()
   @Length(4, 49)
   @IsEmail()

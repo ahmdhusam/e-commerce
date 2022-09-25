@@ -2,7 +2,7 @@ import { IsEnum, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max
 import { ParsePrice, Trim } from 'src/libs';
 import { Category } from '../products.entity';
 
-export class UpdateProduct {
+export class UpdateProductDto {
   @IsUUID('4')
   @IsString()
   id: string;

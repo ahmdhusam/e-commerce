@@ -2,7 +2,7 @@ import { IsEnum, IsInt, IsNumber, IsPositive, IsString, Length, Max } from 'clas
 import { ParsePrice, Trim } from 'src/libs';
 import { Category } from '../products.entity';
 
-export class ProductData {
+export class ProductDataDto {
   @Length(3, 100)
   @Trim()
   @IsString()

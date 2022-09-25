@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class UserSerialize {
+export class UserSerializeDto {
   @Expose()
   name: string;
 

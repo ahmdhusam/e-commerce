@@ -3,19 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID } from 'class-validator';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
-import { ProductData } from './dtos';
-import { UpdateProduct } from './dtos/update-product.dto';
+import { ProductDataDto } from './dtos';
+import { UpdateProductDto } from './dtos/update-product.dto';
 import { Product } from './products.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(@InjectRepository(Product) private readonly productsRepo: Repository<Product>) {}
 
-  create(author: User, productData: ProductData): Promise<Product> {
+  create(author: User, productData: ProductDataDto): Promise<Product> {
     return this.productsRepo.create({ ...productData, author }).save();
   }
 
-  async update(productId: string, productData: Omit<UpdateProduct, 'id'>, currentUser: User): Promise<Product> {
+  async update(productId: string, productData: Omit<UpdateProductDto, 'id'>, currentUser: User): Promise<Product> {
     const product = await this.getOneById(productId);
     this.isAuthorized(currentUser, product);
 

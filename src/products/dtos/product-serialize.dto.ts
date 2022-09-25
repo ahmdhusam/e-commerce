@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
-import { UserSerialize } from 'src/users/dtos';
+import { UserSerializeDto } from 'src/users/dtos';
 import { Category } from '../products.entity';
 
-export class ProductSerialize {
+export class ProductSerializeDto {
   @Expose()
   id: string;
 
@@ -24,7 +24,7 @@ export class ProductSerialize {
   @Expose()
   createdAt: Date;
 
-  @Type(() => UserSerialize)
+  @Type(() => UserSerializeDto)
   @Expose()
-  author: UserSerialize;
+  author: UserSerializeDto;
 }

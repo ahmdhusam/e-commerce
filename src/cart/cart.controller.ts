@@ -11,7 +11,7 @@ import {
 import { isPositive } from 'class-validator';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
-import { ProductSerialize } from 'src/products/dtos';
+import { ProductSerializeDto } from 'src/products/dtos';
 import { CurrentUser } from 'src/users/decorators';
 import { User } from 'src/users/users.entity';
 import { CartService } from './cart.service';
@@ -50,12 +50,12 @@ export class CartController {
     return { message: 'successful' };
   }
 
-  @UseSerialize(ProductSerialize)
+  @UseSerialize(ProductSerializeDto)
   @Get()
   getCart(
     @CurrentUser() currentUser: User,
     @Query() { limit = 10, skip = 0 }: CartOptionsDto,
-  ): Promise<ProductSerialize[]> {
+  ): Promise<ProductSerializeDto[]> {
     return this.cartService.cart(currentUser, Math.min(limit, 30), skip);
   }
 

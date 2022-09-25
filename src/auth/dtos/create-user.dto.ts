@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Trim, ToLowerCase } from 'src/libs';
 
-export class CreateUser {
+export class CreateUserDto {
   @Length(4, 49)
   @Trim()
   @IsString()
