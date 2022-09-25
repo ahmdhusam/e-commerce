@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max } from 'class-validator';
-import { ParsePrice, Trim } from 'src/libs';
+import { ParsePrice, SanitizeHTML, Trim } from 'src/libs';
 import { Category } from '../products.entity';
 
 export class UpdateProductDto {
@@ -9,12 +9,14 @@ export class UpdateProductDto {
 
   @Length(3, 100)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   @IsOptional()
   title?: string;
 
   @Length(0, 400)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   @IsOptional()
   description?: string;

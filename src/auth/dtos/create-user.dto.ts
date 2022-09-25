@@ -8,17 +8,19 @@ import {
   IsLatitude,
   IsLongitude,
 } from 'class-validator';
-import { Trim, ToLowerCase } from 'src/libs';
+import { Trim, ToLowerCase, SanitizeHTML } from 'src/libs';
 
 export class CreateUserDto {
   @Length(4, 49)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   name: string;
 
   @ToLowerCase()
   @Length(4, 49)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   username: string;
 
@@ -26,6 +28,7 @@ export class CreateUserDto {
   @Length(4, 49)
   @IsEmail()
   @Trim()
+  @SanitizeHTML()
   @IsString()
   email: string;
 

@@ -8,11 +8,12 @@ import {
   IsOptional,
   IsLongitude,
 } from 'class-validator';
-import { Trim, ToLowerCase } from 'src/libs';
+import { Trim, ToLowerCase, SanitizeHTML } from 'src/libs';
 
 export class UpdateUserDto {
   @Length(4, 49)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   @IsOptional()
   name?: string;
@@ -20,6 +21,7 @@ export class UpdateUserDto {
   @ToLowerCase()
   @Length(4, 49)
   @Trim()
+  @SanitizeHTML()
   @IsString()
   @IsOptional()
   username?: string;
@@ -28,6 +30,7 @@ export class UpdateUserDto {
   @Length(4, 49)
   @IsEmail()
   @Trim()
+  @SanitizeHTML()
   @IsString()
   @IsOptional()
   email?: string;
