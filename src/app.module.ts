@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
+import { StripeModule } from 'nestjs-stripe';
 
 @Module({
   imports: [
@@ -19,13 +20,20 @@ import { OrdersModule } from './orders/orders.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: config.get('DB_PORT'),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: config.get('DB_NAME'),
+        host: config.getOrThrow('DB_HOST'),
+        port: config.getOrThrow('DB_PORT'),
+        username: config.getOrThrow('DB_USERNAME'),
+        password: config.getOrThrow('DB_PASSWORD'),
+        database: config.getOrThrow('DB_NAME'),
         entities: [User, Product, Cart, Orders],
-        synchronize: config.get('NODE_ENV') !== 'production',
+        synchronize: config.getOrThrow('NODE_ENV') !== 'production',
+      }),
+    }),
+    StripeModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        apiKey: config.getOrThrow('STRIPE_SECRET_KEY'),
+        apiVersion: '2022-08-01',
       }),
     }),
     UsersModule,

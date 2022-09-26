@@ -31,6 +31,7 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "nestjs-stripe": "^1.0.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
@@ -38,6 +39,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "sanitize-html": "^2.7.1",
+    "stripe": "^10.11.0",
     "typeorm": "^0.3.7"
   },
   "devDependencies": {
