@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { isNumber, isString } from 'class-validator';
-import sanitize from 'sanitize-html';
+import * as sanitize from 'sanitize-html';
 
 export const Trim = (): PropertyDecorator => Transform(({ value }) => (isString(value) ? value.trim() : value));
 
