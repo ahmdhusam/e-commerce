@@ -31,7 +31,7 @@ export class ProductsService {
     product.quantity -= quantity;
     product.inOrder += quantity;
 
-    return product.save();
+    return product;
   }
 
   async reverseFromCart(productId: string, quantity: number): Promise<Product> {

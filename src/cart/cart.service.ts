@@ -1,9 +1,9 @@
 import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/products/products.entity';
 import { ProductsService } from 'src/products/products.service';
 import { User } from 'src/users/users.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Cart } from './cart.entity';
 
 @Injectable()
@@ -11,6 +11,7 @@ export class CartService {
   constructor(
     @InjectRepository(Cart) private readonly cartRepo: Repository<Cart>,
     private readonly productService: ProductsService,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
   async cart(user: User, limit: number, skip: number): Promise<Product[]> {
@@ -33,17 +34,16 @@ export class CartService {
   }
 
   async add(to: User, productId: string, quantity: number): Promise<void> {
-    try {
-      await this.update(to.id, productId, quantity);
-    } catch (e) {
-      // Create a new one if it doesn't exist
-      if (e instanceof Error && e.message.includes('product not found in cart')) {
-        await this.create({ ownerId: to.id, productId, quantity });
-        return;
-      }
+    const product = await this.productService.productToCart(productId, quantity);
 
-      throw e;
-    }
+    let cartItem = await this.cartRepo.findOneBy({ ownerId: to.id, productId });
+
+    if (!cartItem) cartItem = this.cartRepo.create({ ownerId: to.id, productId, quantity });
+    else if (cartItem.inOrder) throw new BadRequestException('product in order');
+    else cartItem.quantity += quantity;
+
+    // By transaction
+    await this.entityManager.save([product, cartItem]);
   }
 
   async reverse(ownerId: string, productId: string, quantity: number): Promise<Cart> {
