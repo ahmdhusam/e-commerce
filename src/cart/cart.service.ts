@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/products/products.entity';
 import { ProductsService } from 'src/products/products.service';
@@ -46,45 +46,16 @@ export class CartService {
     await this.entityManager.save([product, cartItem]);
   }
 
-  async reverse(ownerId: string, productId: string, quantity: number): Promise<Cart | void> {
+  async reverse(ownerId: string, productId: string, quantity: number): Promise<void> {
     const cartItem = await this.getOne(ownerId, productId);
+    const product = await this.productService.reverseFromCart(productId, quantity);
 
     if (quantity > cartItem.quantity) throw new BadRequestException();
-
-    if (cartItem.quantity === quantity) {
-      return this.delete(ownerId, productId);
-    }
-    await this.productService.reverseFromCart(productId, quantity);
+    else if (cartItem.quantity === quantity) return this.delete(ownerId, productId);
 
     cartItem.quantity -= quantity;
 
-    return cartItem.save().catch(async () => {
-      await this.productService.productToCart(productId, quantity);
-      throw new BadGatewayException();
-    });
-  }
-
-  async create(cartData: Pick<Cart, 'ownerId' | 'productId' | 'quantity'>): Promise<Cart> {
-    await this.productService.productToCart(cartData.productId, cartData.quantity);
-    return this.cartRepo
-      .create(cartData)
-      .save()
-      .catch(async () => {
-        await this.productService.reverseFromCart(cartData.productId, cartData.quantity);
-        throw new BadRequestException("can't add to cart");
-      });
-  }
-
-  async update(ownerId: string, productId: string, quantity: number): Promise<Cart> {
-    const cartItem = await this.getOne(ownerId, productId);
-
-    await this.productService.productToCart(productId, quantity);
-    cartItem.quantity += quantity;
-
-    return cartItem.save().catch(async () => {
-      await this.productService.reverseFromCart(productId, quantity);
-      throw new BadRequestException("can't update cart");
-    });
+    await this.entityManager.save([product, cartItem]);
   }
 
   async delete(ownerId: string, productId: string): Promise<void> {
