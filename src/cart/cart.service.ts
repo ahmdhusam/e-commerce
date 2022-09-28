@@ -46,7 +46,7 @@ export class CartService {
     await this.entityManager.save([product, cartItem]);
   }
 
-  async reverse(ownerId: string, productId: string, quantity: number): Promise<Cart> {
+  async reverse(ownerId: string, productId: string, quantity: number): Promise<Cart | void> {
     const cartItem = await this.getOne(ownerId, productId);
 
     if (quantity > cartItem.quantity) throw new BadRequestException();
@@ -87,15 +87,15 @@ export class CartService {
     });
   }
 
-  async delete(ownerId: string, productId: string): Promise<Cart> {
+  async delete(ownerId: string, productId: string): Promise<void> {
     const cartItem = await this.getOne(ownerId, productId);
+    const product = await this.productService.reverseFromCart(productId, cartItem.quantity);
 
-    await this.productService.reverseFromCart(productId, cartItem.quantity);
-
-    return cartItem.remove().catch(async () => {
-      await this.productService.productToCart(productId, cartItem.quantity);
-
-      throw new BadGatewayException();
+    await this.entityManager.transaction(async transactionManager => {
+      await Promise.all([
+        transactionManager.delete(Cart, { ownerId: cartItem.ownerId, productId: cartItem.productId }),
+        transactionManager.save(product),
+      ]);
     });
   }
 }

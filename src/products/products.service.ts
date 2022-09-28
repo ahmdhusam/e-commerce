@@ -41,9 +41,7 @@ export class ProductsService {
     product.quantity += quantity;
     product.inOrder -= quantity;
 
-    return product.save().catch(() => {
-      throw new BadRequestException();
-    });
+    return product;
   }
 
   async delete(productId: string, user: User): Promise<Product> {
