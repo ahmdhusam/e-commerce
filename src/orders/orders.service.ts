@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectEntityManager } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { isPositive } from 'class-validator';
 import { InjectStripe } from 'nestjs-stripe';
 import { Cart } from 'src/cart/cart.entity';
 import { User } from 'src/users/users.entity';
 import Stripe from 'stripe';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos';
 import { Orders } from './orders.entity';
 
@@ -14,6 +14,7 @@ export class OrdersService {
   constructor(
     @InjectEntityManager() private readonly entityManager: EntityManager,
     @InjectStripe() private readonly stripe: Stripe,
+    @InjectRepository(Orders) private readonly ordersRepo: Repository<Orders>,
   ) {}
 
   async checkout(user: User, orderData: CreateOrderDto): Promise<void> {
@@ -60,5 +61,28 @@ export class OrdersService {
 
       await transactionManager.update(Cart, { ownerId: user.id, inOrder: false }, { inOrder: true, order });
     });
+  }
+
+  async getOrders(owner: User): Promise<Orders[]> {
+    const orders = await this.ordersRepo
+      .createQueryBuilder('orders')
+      .select(['orders'])
+      .addSelect(['product.id', 'product.title', 'product.description', 'product.price'])
+      .innerJoinAndMapMany('orders.products', 'orders.cart', 'cart')
+      .innerJoin('cart.product', 'product')
+      .where('orders."ownerId" = :ownerId', { ownerId: owner.id })
+      .getMany();
+
+    await new Promise(r => {
+      orders.forEach(order => {
+        // @ts-ignore
+        for (const cartItem of order.products!) {
+          Object.assign(cartItem, cartItem.product);
+        }
+      });
+      r(true);
+    });
+
+    return orders;
   }
 }
