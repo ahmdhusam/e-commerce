@@ -41,8 +41,12 @@ export class OrdersService {
       },
     });
 
+    const amount = total * 100;
+    // Stripe Processing Fees (2.9% + $0.30)
+    const calcSPFees = Math.trunc(amount * 0.03) + 30;
+
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: total * 100,
+      amount: amount + calcSPFees,
       currency: 'usd',
       confirm: true,
       payment_method_types: ['card'],
