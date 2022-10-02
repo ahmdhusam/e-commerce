@@ -20,53 +20,63 @@ export class OrdersService {
   ) {}
 
   async checkout(user: User, orderData: CreateOrderDto): Promise<void> {
-    let { total }: { total: number } = await this.entityManager
-      .createQueryBuilder(Cart, 'cart')
-      .select('SUM(cart.quantity * product.price)', 'total')
-      .innerJoin('cart.product', 'product')
-      .where('cart.owner_id = :ownerId', { ownerId: user.id })
-      .andWhere('cart.in_order = false')
-      .getRawOne();
+    let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
 
-    if (!isPositive(total)) throw new BadRequestException();
-    total = +total.toFixed(2);
+    await this.entityManager
+      .transaction('SERIALIZABLE', async transactionManager => {
+        let { total }: { total: number } = await transactionManager
+          .createQueryBuilder(Cart, 'cart')
+          .select('SUM(cart.quantity * product.price)', 'total')
+          .innerJoin('cart.product', 'product')
+          .where('cart.owner_id = :ownerId', { ownerId: user.id })
+          .andWhere('cart.in_order = false')
+          .getRawOne();
 
-    const paymentMethod = await this.stripe.paymentMethods.create({
-      type: 'card',
-      card: {
-        number: orderData.cardNumber,
-        cvc: orderData.cardCvc,
-        exp_month: orderData.cardExpMonth,
-        exp_year: orderData.cardExpYear,
-      },
-    });
+        if (!isPositive(total)) throw new BadRequestException();
+        total = +total.toFixed(2);
 
-    const amount = total * 100;
-    // Stripe Processing Fees (2.9% + $0.30)
-    const calcSPFees = Math.trunc(amount * 0.03) + 30;
+        const paymentMethod = await this.stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+            number: orderData.cardNumber,
+            cvc: orderData.cardCvc,
+            exp_month: orderData.cardExpMonth,
+            exp_year: orderData.cardExpYear,
+          },
+        });
 
-    const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: amount + calcSPFees,
-      currency: 'usd',
-      confirm: true,
-      payment_method_types: ['card'],
-      payment_method: paymentMethod.id,
-    });
+        const amount = total * 100;
+        // Stripe Processing Fees (2.9% + $0.30)
+        const calcSPFees = Math.trunc(amount * 0.03) + 30;
 
-    const order = Orders.create({
-      payment: paymentIntent.id,
-      city: orderData.city,
-      country: orderData.country,
-      address: orderData.address,
-      owner: user,
-      total,
-    });
+        paymentIntent = await this.stripe.paymentIntents.create({
+          amount: amount + calcSPFees,
+          currency: 'usd',
+          payment_method_types: ['card'],
+          payment_method: paymentMethod.id,
+        });
 
-    await this.entityManager.transaction('SERIALIZABLE', async transactionManager => {
-      await transactionManager.save(order);
+        const order = Orders.create({
+          payment: paymentIntent.id,
+          city: orderData.city,
+          country: orderData.country,
+          address: orderData.address,
+          owner: user,
+          total,
+        });
 
-      await transactionManager.update(Cart, { ownerId: user.id, inOrder: false }, { inOrder: true, order });
-    });
+        await transactionManager.save(order);
+
+        await transactionManager.update(Cart, { ownerId: user.id, inOrder: false }, { inOrder: true, order });
+
+        await this.stripe.paymentIntents.confirm(paymentIntent.id);
+      })
+      .catch(async () => {
+        if (paymentIntent) {
+          await this.stripe.paymentIntents.cancel(paymentIntent.id);
+        }
+        throw new BadRequestException();
+      });
   }
 
   async getOrders(owner: User): Promise<Orders[]> {
