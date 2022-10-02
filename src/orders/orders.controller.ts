@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
+import { ResponseMessage } from 'src/types';
 import { CurrentUser } from 'src/users/decorators';
 import { User } from 'src/users/users.entity';
 import { CreateOrderDto, OrderSerializeDto } from './dtos';
@@ -13,7 +14,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('checkout')
-  async checkout(@CurrentUser() currentUser: User, @Body() orderData: CreateOrderDto): Promise<{ message: string }> {
+  async checkout(@CurrentUser() currentUser: User, @Body() orderData: CreateOrderDto): Promise<ResponseMessage> {
     await this.ordersService.checkout(currentUser, orderData);
     return { message: 'successful' };
   }
