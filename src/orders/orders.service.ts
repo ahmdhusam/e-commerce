@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { isPositive } from 'class-validator';
 import { InjectStripe } from 'nestjs-stripe';
 import { Cart } from 'src/cart/cart.entity';
+import { ProductsService } from 'src/products/products.service';
 import { User } from 'src/users/users.entity';
 import Stripe from 'stripe';
 import { EntityManager, Repository } from 'typeorm';
@@ -15,6 +16,7 @@ export class OrdersService {
     @InjectEntityManager() private readonly entityManager: EntityManager,
     @InjectStripe() private readonly stripe: Stripe,
     @InjectRepository(Orders) private readonly ordersRepo: Repository<Orders>,
+    private readonly productsService: ProductsService,
   ) {}
 
   async checkout(user: User, orderData: CreateOrderDto): Promise<void> {
@@ -84,5 +86,25 @@ export class OrdersService {
     });
 
     return orders;
+  }
+
+  async deleteById(owner: User, orderId: number): Promise<void> {
+    const order = await this.ordersRepo.findOne({
+      where: { id: orderId },
+      loadRelationIds: { relations: ['owner'] },
+      relations: ['cart'],
+    });
+    if (!order) throw new NotFoundException('Order Not Found');
+    if (order.owner.toString() !== owner.id) throw new UnauthorizedException();
+
+    const products = await Promise.all(
+      order.cart.map(cartItem => this.productsService.reverseFromCart(cartItem.productId, cartItem.quantity)),
+    );
+
+    await this.entityManager.transaction(async transactionManager => {
+      await Promise.all([transactionManager.remove(order), transactionManager.save(products)]);
+
+      await this.stripe.refunds.create({ payment_intent: order.payment, amount: +order.total * 100 });
+    });
   }
 }

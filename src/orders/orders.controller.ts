@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { ResponseMessage } from 'src/types';
@@ -23,5 +23,14 @@ export class OrdersController {
   @Get()
   getOrders(@CurrentUser() currentUser: User): Promise<Orders[]> {
     return this.ordersService.getOrders(currentUser);
+  }
+
+  @Delete(':orderId')
+  async deleteOrder(
+    @CurrentUser() currentUser: User,
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<ResponseMessage> {
+    await this.ordersService.deleteById(currentUser, orderId);
+    return { message: 'successful' };
   }
 }
