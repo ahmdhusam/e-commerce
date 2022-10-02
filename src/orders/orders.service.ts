@@ -102,14 +102,14 @@ export class OrdersService {
     return orders;
   }
 
-  async deleteById(owner: User, orderId: number): Promise<void> {
+  async deleteOneById(owner: User, orderId: number): Promise<void> {
     const order = await this.ordersRepo.findOne({
       where: { id: orderId },
       loadRelationIds: { relations: ['owner'] },
       relations: ['cart'],
     });
     if (!order) throw new NotFoundException('Order Not Found');
-    if (order.owner.toString() !== owner.id) throw new UnauthorizedException();
+    this.isAuthorized(owner, order);
 
     const products = await Promise.all(
       order.cart.map(cartItem => this.productsService.reverseFromCart(cartItem.productId, cartItem.quantity)),
@@ -120,5 +120,9 @@ export class OrdersService {
 
       await this.stripe.refunds.create({ payment_intent: order.payment, amount: +order.total * 100 });
     });
+  }
+
+  private isAuthorized(user: User, order: Orders): void {
+    if (order.owner.toString() !== user.id) throw new UnauthorizedException();
   }
 }

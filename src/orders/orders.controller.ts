@@ -30,7 +30,7 @@ export class OrdersController {
     @CurrentUser() currentUser: User,
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<ResponseMessage> {
-    await this.ordersService.deleteById(currentUser, orderId);
+    await this.ordersService.deleteOneById(currentUser, orderId);
     return { message: 'successful' };
   }
 }
