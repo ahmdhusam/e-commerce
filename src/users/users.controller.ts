@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Put } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentUser } from './decorators';
 import { ChangePasswordDto, UpdateUserDto, UserSerializeDto } from './dtos';
 import { User } from './users.entity';
-import { UsersService } from './users.service';
+import { UsersService } from './services';
+import { ResponseMessage } from 'src/types';
 
 @UseSerialize(UserSerializeDto)
 @UseAuthGuard()
@@ -22,7 +23,7 @@ export class UsersController {
     return this.usersService.getOneBy({ username });
   }
 
-  @Put('update-profile')
+  @Patch('update-profile')
   updateUser(@CurrentUser() currentUser: User, @Body() userData: UpdateUserDto): Promise<UserSerializeDto> {
     return this.usersService.update(currentUser, userData);
   }
@@ -31,9 +32,9 @@ export class UsersController {
   async changePassword(
     @CurrentUser() currentUser: User,
     @Body() passwords: ChangePasswordDto,
-  ): Promise<UserSerializeDto> {
-    await this.usersService.validatePassword(currentUser, passwords.oldPassword);
-    await this.usersService.hashPassword(currentUser, passwords.newPassword);
-    return currentUser.save();
+  ): Promise<ResponseMessage> {
+    await this.usersService.updatePassword(currentUser, passwords.oldPassword, passwords.newPassword);
+
+    return { message: 'successful' };
   }
 }

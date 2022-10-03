@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ResponseMessage } from 'src/types';
 
 export class UserSerializeDto {
   @Expose()
@@ -21,4 +22,7 @@ export class UserSerializeDto {
 
   @Expose()
   access_token?: string;
+
+  @Expose()
+  message?: ResponseMessage;
 }
