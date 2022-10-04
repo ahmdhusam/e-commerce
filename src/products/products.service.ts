@@ -15,9 +15,9 @@ export class ProductsService {
     return this.productsRepo.create({ ...productData, author }).save();
   }
 
-  async update(productId: string, productData: Omit<UpdateProductDto, 'id'>, currentUser: User): Promise<Product> {
+  async update(user: User, productId: string, productData: Omit<UpdateProductDto, 'id'>): Promise<Product> {
     const product = await this.getOneById(productId);
-    this.isAuthorized(currentUser, product);
+    this.isAuthorized(user, product);
 
     Object.assign(product, productData);
     return product.save();
