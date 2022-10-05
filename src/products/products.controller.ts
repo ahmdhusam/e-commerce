@@ -23,12 +23,12 @@ export class ProductsController {
     @CurrentUser() currentUser: User,
     @Body() { id, ...productData }: UpdateProductDto,
   ): Promise<ProductSerializeDto> {
-    return this.productsService.update(id, productData, currentUser);
+    return this.productsService.update(currentUser, id, productData);
   }
 
   @Delete('delete-product/:productId')
   deleteProduct(@CurrentUser() currentUser: User, @Param('productId') productId: string): Promise<ProductSerializeDto> {
-    return this.productsService.delete(productId, currentUser);
+    return this.productsService.delete(currentUser, productId);
   }
 
   @Get(':productId')

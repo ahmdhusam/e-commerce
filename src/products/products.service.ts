@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID } from 'class-validator';
 import { User } from 'src/users/users.entity';
@@ -44,7 +44,7 @@ export class ProductsService {
     return product;
   }
 
-  async delete(productId: string, user: User): Promise<Product> {
+  async delete(user: User, productId: string): Promise<Product> {
     const product = await this.getOneById(productId);
     this.isAuthorized(user, product);
 
@@ -54,7 +54,7 @@ export class ProductsService {
   }
 
   isAuthorized(user: User, product: Product): void {
-    if (product.author.id !== user.id) throw new ForbiddenException('unauthorized');
+    if (product.author.id !== user.id) throw new UnauthorizedException();
   }
 
   getOneById(productId: string): Promise<Product> {
