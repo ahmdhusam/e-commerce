@@ -1,22 +1,23 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { isPositive } from 'class-validator';
-import { InjectStripe } from 'nestjs-stripe';
 import { Cart } from 'src/cart/cart.entity';
+import { CartService } from 'src/cart/cart.service';
 import { ProductsService } from 'src/products/products.service';
 import { User } from 'src/users/users.entity';
 import Stripe from 'stripe';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos';
 import { Orders } from './orders.entity';
+import { PaymentsService } from './services/payments.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectEntityManager() private readonly entityManager: EntityManager,
-    @InjectStripe() private readonly stripe: Stripe,
     @InjectRepository(Orders) private readonly ordersRepo: Repository<Orders>,
     private readonly productsService: ProductsService,
+    private readonly cartService: CartService,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   async checkout(user: User, orderData: CreateOrderDto): Promise<void> {
@@ -24,37 +25,10 @@ export class OrdersService {
 
     await this.entityManager
       .transaction('SERIALIZABLE', async transactionManager => {
-        let { total }: { total: number } = await transactionManager
-          .createQueryBuilder(Cart, 'cart')
-          .select('SUM(cart.quantity * product.price)', 'total')
-          .innerJoin('cart.product', 'product')
-          .where('cart.owner_id = :ownerId', { ownerId: user.id })
-          .andWhere('cart.in_order = false')
-          .getRawOne();
+        const total = await this.cartService.getTotalAmount(user.id);
+        if (total === 0) throw new BadRequestException('cart is empty');
 
-        if (!isPositive(total)) throw new BadRequestException();
-        total = +total.toFixed(2);
-
-        const paymentMethod = await this.stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: orderData.cardNumber,
-            cvc: orderData.cardCvc,
-            exp_month: orderData.cardExpMonth,
-            exp_year: orderData.cardExpYear,
-          },
-        });
-
-        const amount = total * 100;
-        // Stripe Processing Fees (2.9% + $0.30)
-        const calcSPFees = Math.trunc(amount * 0.03) + 30;
-
-        paymentIntent = await this.stripe.paymentIntents.create({
-          amount: amount + calcSPFees,
-          currency: 'usd',
-          payment_method_types: ['card'],
-          payment_method: paymentMethod.id,
-        });
+        paymentIntent = await this.paymentsService.createPaymentIntent(orderData.creditCard, total);
 
         const order = Orders.create({
           payment: paymentIntent.id,
@@ -69,11 +43,11 @@ export class OrdersService {
 
         await transactionManager.update(Cart, { ownerId: user.id, inOrder: false }, { inOrder: true, order });
 
-        await this.stripe.paymentIntents.confirm(paymentIntent.id);
+        await this.paymentsService.confirm(paymentIntent.id);
       })
       .catch(async () => {
         if (paymentIntent) {
-          await this.stripe.paymentIntents.cancel(paymentIntent.id);
+          await this.paymentsService.cancel(paymentIntent.id);
         }
         throw new BadRequestException();
       });
@@ -109,6 +83,7 @@ export class OrdersService {
       relations: ['cart'],
     });
     if (!order) throw new NotFoundException('Order Not Found');
+
     this.isAuthorized(owner, order);
 
     const products = await Promise.all(
@@ -118,7 +93,7 @@ export class OrdersService {
     await this.entityManager.transaction(async transactionManager => {
       await Promise.all([transactionManager.remove(order), transactionManager.save(products)]);
 
-      await this.stripe.refunds.create({ payment_intent: order.payment, amount: +order.total * 100 });
+      await this.paymentsService.refund(order.payment, order.total);
     });
   }
 

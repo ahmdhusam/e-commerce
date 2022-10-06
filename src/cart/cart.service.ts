@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { isPositive } from 'class-validator';
 import { Product } from 'src/products/products.entity';
 import { ProductsService } from 'src/products/products.service';
 import { User } from 'src/users/users.entity';
@@ -68,5 +69,19 @@ export class CartService {
         transactionManager.save(product),
       ]);
     });
+  }
+
+  async getTotalAmount(ownerId: string): Promise<number> {
+    const { total } = await this.cartRepo
+      .createQueryBuilder('cart')
+      .select('SUM(cart.quantity * product.price)', 'total')
+      .innerJoin('cart.product', 'product')
+      .where('cart.owner_id = :ownerId', { ownerId })
+      .andWhere('cart.in_order = false')
+      .getRawOne();
+
+    if (!isPositive(total)) return 0;
+
+    return +total.toFixed(2);
   }
 }

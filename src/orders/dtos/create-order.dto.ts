@@ -1,5 +1,7 @@
-import { IsCreditCard, IsInt, IsNumber, IsNumberString, IsPositive, IsString, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsObject, IsString, ValidateNested } from 'class-validator';
 import { SanitizeHTML, ToLowerCase, Trim } from 'src/libs';
+import { CreditCardDto } from './credit-card.dto';
 
 export class CreateOrderDto {
   @ToLowerCase()
@@ -20,21 +22,8 @@ export class CreateOrderDto {
   @IsString()
   address: string;
 
-  @IsCreditCard()
-  cardNumber: string;
-
-  @IsNumberString()
-  cardCvc: string;
-
-  @Min(2022)
-  @IsInt()
-  @IsPositive()
-  @IsNumber()
-  cardExpYear: number;
-
-  @Max(12)
-  @IsInt()
-  @IsPositive()
-  @IsNumber()
-  cardExpMonth: number;
+  @Type(() => CreditCardDto)
+  @ValidateNested()
+  @IsObject()
+  creditCard: CreditCardDto;
 }
