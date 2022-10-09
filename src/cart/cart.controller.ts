@@ -31,7 +31,7 @@ export class CartController {
   ): Promise<ResponseMessage> {
     if (!isPositive(quantity)) throw new BadRequestException('quantity must be a positive number');
 
-    await this.cartService.add(currentUser, productId, quantity);
+    await this.cartService.add(currentUser.id, productId, quantity);
     return { message: 'successful' };
   }
 
@@ -53,7 +53,7 @@ export class CartController {
     @CurrentUser() currentUser: User,
     @Query() { limit = 10, skip = 0 }: CartOptionsDto,
   ): Promise<ProductSerializeDto[]> {
-    return this.cartService.cart(currentUser, Math.min(limit, 30), skip);
+    return this.cartService.cart(currentUser.id, Math.min(limit, 30), skip);
   }
 
   @Delete(':id')
