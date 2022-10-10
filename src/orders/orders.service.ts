@@ -30,7 +30,7 @@ export class OrdersService {
 
         paymentIntent = await this.paymentsService.createPaymentIntent(orderData.creditCard, total);
 
-        const order = Orders.create({
+        const order = this.ordersRepo.create({
           payment: paymentIntent.id,
           city: orderData.city,
           country: orderData.country,
