@@ -6,7 +6,9 @@ import { ChangePasswordDto, UpdateUserDto, UserSerializeDto } from './dtos';
 import { User } from './users.entity';
 import { UsersService } from './services';
 import { ResponseMessage } from 'src/types';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @UseSerialize(UserSerializeDto)
 @UseAuthGuard()
 @Controller('users')

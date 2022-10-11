@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { isPositive } from 'class-validator';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
@@ -18,6 +19,7 @@ import { User } from 'src/users/users.entity';
 import { CartService } from './cart.service';
 import { CartOptionsDto } from './dtos';
 
+@ApiBearerAuth()
 @UseAuthGuard()
 @Controller('cart')
 export class CartController {

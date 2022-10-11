@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { ResponseMessage } from 'src/types';
@@ -8,6 +9,7 @@ import { CreateOrderDto, OrderSerializeDto } from './dtos';
 import { Orders } from './orders.entity';
 import { OrdersService } from './orders.service';
 
+@ApiBearerAuth()
 @UseAuthGuard()
 @Controller('orders')
 export class OrdersController {

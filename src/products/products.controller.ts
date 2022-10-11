@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Param, Post, Put, Get } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentUser } from 'src/users/decorators';
@@ -7,6 +8,7 @@ import { ProductDataDto, ProductSerializeDto } from './dtos';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
 
+@ApiBearerAuth()
 @UseSerialize(ProductSerializeDto)
 @UseAuthGuard()
 @Controller('products')

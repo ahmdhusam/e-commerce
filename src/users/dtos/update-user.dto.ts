@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Length,
   IsString,
@@ -11,6 +12,7 @@ import {
 import { Trim, ToLowerCase, SanitizeHTML } from 'src/libs';
 
 export class UpdateUserDto {
+  @ApiProperty({ minLength: 4, maxLength: 49, required: false })
   @Length(4, 49)
   @Trim()
   @SanitizeHTML()
@@ -18,6 +20,7 @@ export class UpdateUserDto {
   @IsOptional()
   name?: string;
 
+  @ApiProperty({ minLength: 4, maxLength: 49, required: false, uniqueItems: true })
   @ToLowerCase()
   @Length(4, 49)
   @Trim()
@@ -26,6 +29,7 @@ export class UpdateUserDto {
   @IsOptional()
   username?: string;
 
+  @ApiProperty({ minLength: 4, maxLength: 49, required: false, uniqueItems: true })
   @ToLowerCase()
   @Length(4, 49)
   @IsEmail()
@@ -35,15 +39,18 @@ export class UpdateUserDto {
   @IsOptional()
   email?: string;
 
+  @ApiProperty({ required: false })
   @IsDateString()
   @IsOptional()
   birthDate?: Date;
 
+  @ApiProperty({ title: 'Latitude', required: false })
   @IsLatitude({ message: 'lat must be a latitude' })
   @IsNumber()
   @IsOptional()
   lat?: number;
 
+  @ApiProperty({ title: 'Longitude', required: false })
   @IsLongitude({ message: 'lng must be a longitude' })
   @IsNumber()
   @IsOptional()
