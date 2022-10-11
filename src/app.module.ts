@@ -13,6 +13,8 @@ import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { StripeModule } from 'nestjs-stripe';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -40,6 +42,12 @@ import { StripeModule } from 'nestjs-stripe';
     RouterModule.register([
       { path: 'api/v1', children: [UsersModule, AuthModule, ProductsModule, CartModule, OrdersModule] },
     ]),
+    ServeStaticModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => [
+        { rootPath: join(process.cwd(), ...config.getOrThrow<string>('SERVE_STATIC_PATH').split('/')) },
+      ],
+    }),
     UsersModule,
     AuthModule,
     ProductsModule,
