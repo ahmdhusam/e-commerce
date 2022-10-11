@@ -1,3 +1,4 @@
+import { RouterModule } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -36,6 +37,9 @@ import { StripeModule } from 'nestjs-stripe';
         apiVersion: '2022-08-01',
       }),
     }),
+    RouterModule.register([
+      { path: 'api/v1', children: [UsersModule, AuthModule, ProductsModule, CartModule, OrdersModule] },
+    ]),
     UsersModule,
     AuthModule,
     ProductsModule,
