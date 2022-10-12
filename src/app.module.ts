@@ -40,7 +40,7 @@ import { join } from 'path';
       }),
     }),
     RouterModule.register([
-      { path: 'api/v1', children: [UsersModule, AuthModule, ProductsModule, CartModule, OrdersModule] },
+      { path: 'api/v1', children: [AuthModule, UsersModule, ProductsModule, CartModule, OrdersModule] },
     ]),
     ServeStaticModule.forRootAsync({
       inject: [ConfigService],
@@ -48,8 +48,8 @@ import { join } from 'path';
         { rootPath: join(process.cwd(), ...config.getOrThrow<string>('SERVE_STATIC_PATH').split('/')) },
       ],
     }),
-    UsersModule,
     AuthModule,
+    UsersModule,
     ProductsModule,
     CartModule,
     OrdersModule,

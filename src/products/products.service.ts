@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { isUUID } from 'class-validator';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { ProductDataDto } from './dtos';
@@ -58,8 +57,6 @@ export class ProductsService {
   }
 
   getOneById(productId: string): Promise<Product> {
-    if (!isUUID(productId, '4')) throw new BadRequestException('product id must be a UUID v4');
-
     return this.productsRepo.findOneOrFail({ where: { id: productId }, relations: ['author'] }).catch(() => {
       throw new NotFoundException('product Not Found');
     });

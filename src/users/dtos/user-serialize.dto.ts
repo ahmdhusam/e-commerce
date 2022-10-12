@@ -1,28 +1,27 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { ResponseMessage } from 'src/types';
 
 export class UserSerializeDto {
+  @ApiResponseProperty()
   @Expose()
   name: string;
 
+  @ApiResponseProperty()
   @Expose()
   username: string;
 
   @Expose()
   email: string;
 
+  @ApiResponseProperty()
   @Expose()
   birthDate: Date;
 
+  @ApiResponseProperty()
   @Expose()
   lat: number;
 
+  @ApiResponseProperty()
   @Expose()
   lng: number;
-
-  @Expose()
-  access_token?: string;
-
-  @Expose()
-  message?: ResponseMessage;
 }
