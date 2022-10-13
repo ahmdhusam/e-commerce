@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsInt, IsNumber, isNumberString, IsOptional, IsPositive } from 'class-validator';
+import { IsPositive, IsInt, IsNumber, isNumberString, IsOptional } from 'class-validator';
 
-export class CartOptionsDto {
+export class ProductsOptionsDto {
   @ApiProperty({ required: false })
   @IsPositive()
   @IsInt()
