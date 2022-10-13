@@ -14,6 +14,14 @@ export class ProductsService {
     return this.productsRepo.create({ ...productData, author }).save();
   }
 
+  getProducts(limit: number, skip: number): Promise<Product[]> {
+    return this.productsRepo.find({
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip,
+    });
+  }
+
   async update(user: User, productId: string, productData: Omit<UpdateProductDto, 'id'>): Promise<Product> {
     const product = await this.getOneById(productId);
     this.isAuthorized(user, product);
