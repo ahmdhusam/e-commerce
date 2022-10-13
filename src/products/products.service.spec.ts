@@ -24,6 +24,7 @@ describe('ProductsService', () => {
         return createdProduct;
       }),
       findOneOrFail: jest.fn().mockResolvedValue({} as Product),
+      find: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -60,6 +61,20 @@ describe('ProductsService', () => {
       const newProduct = await service.create({} as User, {} as ProductDataDto);
 
       expect(newProduct.save).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getProducts()', () => {
+    it('should call productsRepo find method', async () => {
+      await service.getProducts(10, 0);
+
+      expect(productsRepoMock.find).toBeCalled();
+    });
+
+    it('should call productsRepo find method one time', async () => {
+      await service.getProducts(10, 0);
+
+      expect(productsRepoMock.find).toBeCalledTimes(1);
     });
   });
 
@@ -337,9 +352,9 @@ describe('ProductsService', () => {
   describe('getOneById()', () => {
     const validUUIDv4 = 'fb0406bf-7d53-4fc4-b774-be7c9bd60174';
 
-    it('should throw bad request exception if the productId is not UUIDv4', async () => {
-      expect(service.getOneById.bind(service, '1298a837-1239f9')).rejects.toThrowError(BadRequestException);
-    });
+    // it('should throw bad request exception if the productId is not UUIDv4', async () => {
+    //   expect(service.getOneById.bind(service, '1298a837-1239f9')).rejects.toThrowError(BadRequestException);
+    // });
 
     it('should call the productsRepo findOneOrFail method', async () => {
       await service.getOneById(validUUIDv4);
