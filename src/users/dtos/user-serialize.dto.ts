@@ -10,18 +10,7 @@ export class UserSerializeDto {
   @Expose()
   username: string;
 
+  @ApiResponseProperty()
   @Expose()
   email: string;
-
-  @ApiResponseProperty()
-  @Expose()
-  birthDate: Date;
-
-  @ApiResponseProperty()
-  @Expose()
-  lat: number;
-
-  @ApiResponseProperty()
-  @Expose()
-  lng: number;
 }
