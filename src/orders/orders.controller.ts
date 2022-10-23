@@ -8,8 +8,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UseAuthGuard } from 'src/auth/guards';
-import { MessageSerializeDto, ResponseMessage } from 'src/dtos';
-import { UseSerialize } from 'src/interceptors/serialize.interceptor';
+import { MessageSerializeDto, ResponseMessage } from 'src/shared/dtos';
+import { UseSerialize } from 'src/shared/interceptors/serialize.interceptor';
 import { CurrentUser } from 'src/users/decorators';
 import { User } from 'src/users/users.entity';
 import { CreateOrderDto, OrderSerializeDto } from './dtos';

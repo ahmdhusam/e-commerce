@@ -9,7 +9,7 @@ import {
   IsLatitude,
   IsLongitude,
 } from 'class-validator';
-import { Trim, ToLowerCase, SanitizeHTML } from 'src/libs';
+import { Trim, ToLowerCase, SanitizeHTML } from 'src/shared/libs';
 
 export class CreateUserDto {
   @ApiProperty({ minLength: 4, maxLength: 49 })

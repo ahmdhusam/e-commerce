@@ -9,7 +9,7 @@ import {
   IsOptional,
   IsLongitude,
 } from 'class-validator';
-import { Trim, ToLowerCase, SanitizeHTML } from 'src/libs';
+import { Trim, ToLowerCase, SanitizeHTML } from 'src/shared/libs';
 
 export class UpdateUserDto {
   @ApiProperty({ minLength: 4, maxLength: 49, required: false })
@@ -55,4 +55,8 @@ export class UpdateUserDto {
   @IsNumber()
   @IsOptional()
   lng?: number;
+
+  avatar?: string;
+
+  header?: string;
 }

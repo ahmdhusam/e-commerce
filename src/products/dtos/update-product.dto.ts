@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max } from 'class-validator';
-import { ParsePrice, SanitizeHTML, Trim } from 'src/libs';
+import { ParsePrice, SanitizeHTML, Trim } from 'src/shared/libs';
 import { Category } from '../products.entity';
 
 export class UpdateProductDto {

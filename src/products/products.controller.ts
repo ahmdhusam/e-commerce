@@ -9,7 +9,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SkipAuth, UseAuthGuard } from 'src/auth/guards';
-import { UseSerialize } from 'src/interceptors/serialize.interceptor';
+import { UseSerialize } from 'src/shared/interceptors/serialize.interceptor';
 import { CurrentUser } from 'src/users/decorators';
 import { User } from 'src/users/users.entity';
 import { ProductDataDto, ProductSerializeDto, ProductsOptionsDto } from './dtos';

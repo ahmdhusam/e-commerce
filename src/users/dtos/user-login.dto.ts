@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, Length } from 'class-validator';
-import { SanitizeHTML, ToLowerCase, Trim } from 'src/libs';
+import { SanitizeHTML, ToLowerCase, Trim } from 'src/shared/libs';
 
 export class UserLoginDto {
   @ApiProperty({ minLength: 4, maxLength: 49 })

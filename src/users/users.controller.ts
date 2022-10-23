@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Put } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
-import { UseSerialize } from 'src/interceptors/serialize.interceptor';
+import { UseSerialize } from 'src/shared/interceptors/serialize.interceptor';
 import { CurrentUser } from './decorators';
 import { ChangePasswordDto, UpdateUserDto, UserSerializeDto } from './dtos';
 import { User } from './users.entity';
@@ -12,7 +12,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { MessageSerializeDto, ResponseMessage } from 'src/dtos';
+import { MessageSerializeDto, ResponseMessage } from 'src/shared/dtos';
 
 @ApiBearerAuth()
 @UseSerialize(UserSerializeDto)

@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { MessageSerializeDto, ResponseMessage } from 'src/dtos';
-import { UseSerialize } from 'src/interceptors/serialize.interceptor';
+import { MessageSerializeDto, ResponseMessage } from 'src/shared/dtos';
+import { UseSerialize } from 'src/shared/interceptors/serialize.interceptor';
 import { CreateUserDto, UserLoginDto } from 'src/users/dtos';
 import { UsersService } from 'src/users/services';
 import { AuthService } from './auth.service';
