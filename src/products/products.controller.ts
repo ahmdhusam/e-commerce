@@ -5,6 +5,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SkipAuth, UseAuthGuard } from 'src/auth/guards';
@@ -15,6 +16,7 @@ import { ProductDataDto, ProductSerializeDto, ProductsOptionsDto } from './dtos'
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
 
+@ApiTags('products')
 @UseSerialize(ProductSerializeDto)
 @UseAuthGuard()
 @Controller('products')

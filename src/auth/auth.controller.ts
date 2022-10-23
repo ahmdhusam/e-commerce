@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MessageSerializeDto, ResponseMessage } from 'src/dtos';
 import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { CreateUserDto, UserLoginDto } from 'src/users/dtos';
@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/services';
 import { AuthService } from './auth.service';
 import { AuthSerializeDto } from './dtos';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}

@@ -4,6 +4,7 @@ import {
   ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UseAuthGuard } from 'src/auth/guards';
@@ -15,6 +16,7 @@ import { CreateOrderDto, OrderSerializeDto } from './dtos';
 import { Orders } from './orders.entity';
 import { OrdersService } from './orders.service';
 
+@ApiTags('orders')
 @ApiBearerAuth()
 @UseSerialize(MessageSerializeDto)
 @UseAuthGuard()

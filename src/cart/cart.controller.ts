@@ -8,7 +8,14 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { isPositive } from 'class-validator';
 import { UseAuthGuard } from 'src/auth/guards';
 import { MessageSerializeDto, ResponseMessage } from 'src/dtos';
@@ -19,6 +26,7 @@ import { User } from 'src/users/users.entity';
 import { CartService } from './cart.service';
 import { CartOptionsDto } from './dtos';
 
+@ApiTags('cart')
 @ApiBearerAuth()
 @UseSerialize(MessageSerializeDto)
 @UseAuthGuard()
