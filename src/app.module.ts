@@ -15,6 +15,7 @@ import { OrdersModule } from './orders/orders.module';
 import { StripeModule } from 'nestjs-stripe';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ImagesModule } from './shared/services/images/images.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { join } from 'path';
     ProductsModule,
     CartModule,
     OrdersModule,
+    ImagesModule,
   ],
   controllers: [],
   providers: [],
