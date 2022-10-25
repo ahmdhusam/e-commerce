@@ -14,10 +14,7 @@ export class ImagesService {
   async generateImagePath(file: Express.Multer.File): Promise<string> {
     const imageName = this.generateImageName();
 
-    await sharp(file.buffer)
-      .jpeg({ quality: 90 })
-      .toFormat('jpeg')
-      .toFile(join(...this.serveStaticPath, this.folderName, imageName));
+    await this.saveImage(file.buffer, imageName);
 
     return `${this.folderName}/${imageName}`;
   }
@@ -28,5 +25,12 @@ export class ImagesService {
 
   private generateImageName(): string {
     return `${new Date().toISOString().replace(/[:]|[.]/g, '-')}-${Date.now().toString(36)}.jpeg`;
+  }
+
+  private saveImage(imageBuffer: Buffer, imageName: string): Promise<sharp.OutputInfo> {
+    return sharp(imageBuffer)
+      .jpeg({ quality: 90 })
+      .toFormat('jpeg')
+      .toFile(join(...this.serveStaticPath, this.folderName, imageName));
   }
 }
