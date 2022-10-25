@@ -41,6 +41,12 @@ export class User extends BaseEntity {
   @Column({ length: 141, default: '' })
   about: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
+  header: string;
+
   @Check(`"lat" BETWEEN -90 AND 90`)
   @Column({ type: 'real', nullable: true })
   lat: number;

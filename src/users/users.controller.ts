@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Put, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { UseAuthGuard } from 'src/auth/guards';
 import { UseSerialize } from 'src/shared/interceptors/serialize.interceptor';
 import { CurrentUser } from './decorators';
@@ -13,13 +13,17 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { MessageSerializeDto, ResponseMessage } from 'src/shared/dtos';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UserImages } from './interfaces/user-image.interface';
+import { SharpPipe } from 'src/shared/pipes';
+import { ImagesService } from 'src/shared/services';
 
 @ApiBearerAuth()
 @UseSerialize(UserSerializeDto)
 @UseAuthGuard()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private readonly imagesService: ImagesService) {}
 
   @ApiOkResponse({ type: () => UserSerializeDto })
   @Get('me')
@@ -39,8 +43,24 @@ export class UsersController {
     type: () => UserSerializeDto,
   })
   @ApiBadRequestResponse({ description: 'Email Or username in use' })
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'header', maxCount: 1 },
+    ]),
+  )
   @Patch('update-profile')
-  updateUser(@CurrentUser() currentUser: User, @Body() userData: UpdateUserDto): Promise<UserSerializeDto> {
+  async updateUser(
+    @CurrentUser() currentUser: User,
+    @Body() userData: UpdateUserDto,
+    @UploadedFiles(SharpPipe) userImages: UserImages,
+  ): Promise<UserSerializeDto> {
+    for (const fieldName in userImages) {
+      [userData[fieldName]] = userImages[fieldName];
+
+      if (currentUser[fieldName]) await this.imagesService.deleteImage(currentUser[fieldName]);
+    }
+
     return this.usersService.update(currentUser, userData);
   }
 

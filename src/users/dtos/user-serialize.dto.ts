@@ -13,4 +13,12 @@ export class UserSerializeDto {
   @ApiResponseProperty()
   @Expose()
   email: string;
+
+  @ApiResponseProperty()
+  @Expose()
+  avatar: string;
+
+  @ApiResponseProperty()
+  @Expose()
+  header: string;
 }
