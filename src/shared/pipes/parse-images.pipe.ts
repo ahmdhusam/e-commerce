@@ -10,7 +10,7 @@ interface FieldPaths {
 }
 
 @Injectable()
-export class SharpPipe extends ParseFilePipe {
+export class ParseImagesPipe extends ParseFilePipe {
   constructor(private readonly imagesService: ImagesService) {
     super({
       validators: [

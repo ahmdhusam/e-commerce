@@ -1,1 +1,1 @@
-export * from './sharp.pipe';
+export * from './parse-images.pipe';

@@ -15,7 +15,7 @@ import {
 import { MessageSerializeDto, ResponseMessage } from 'src/shared/dtos';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserImages } from './interfaces/user-image.interface';
-import { SharpPipe } from 'src/shared/pipes';
+import { ParseImagesPipe } from 'src/shared/pipes';
 import { ImagesService } from 'src/shared/services';
 
 @ApiBearerAuth()
@@ -53,7 +53,7 @@ export class UsersController {
   async updateUser(
     @CurrentUser() currentUser: User,
     @Body() userData: UpdateUserDto,
-    @UploadedFiles(SharpPipe) userImages: UserImages,
+    @UploadedFiles(ParseImagesPipe) userImages: UserImages,
   ): Promise<UserSerializeDto> {
     for (const fieldName in userImages) {
       [userData[fieldName]] = userImages[fieldName];
