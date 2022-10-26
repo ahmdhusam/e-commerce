@@ -9,7 +9,7 @@ import {
   IsOptional,
   IsLongitude,
 } from 'class-validator';
-import { Trim, ToLowerCase, SanitizeHTML } from 'src/shared/libs';
+import { Trim, ToLowerCase, SanitizeHTML, ParseNumber } from 'src/shared/libs';
 
 export class UpdateUserDto {
   @ApiProperty({ minLength: 4, maxLength: 49, required: false })
@@ -47,12 +47,14 @@ export class UpdateUserDto {
   @ApiProperty({ title: 'Latitude', required: false })
   @IsLatitude({ message: 'lat must be a latitude' })
   @IsNumber()
+  @ParseNumber()
   @IsOptional()
   lat?: number;
 
   @ApiProperty({ title: 'Longitude', required: false })
   @IsLongitude({ message: 'lng must be a longitude' })
   @IsNumber()
+  @ParseNumber()
   @IsOptional()
   lng?: number;
 

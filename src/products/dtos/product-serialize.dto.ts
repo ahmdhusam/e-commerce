@@ -26,6 +26,10 @@ export class ProductSerializeDto {
 
   @ApiResponseProperty()
   @Expose()
+  images: string[];
+
+  @ApiResponseProperty()
+  @Expose()
   category: Category;
 
   @ApiResponseProperty()

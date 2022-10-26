@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, Max } from 'class-validator';
-import { ParsePrice, SanitizeHTML, Trim } from 'src/shared/libs';
+import { ParseNumber, ParsePrice, SanitizeHTML, Trim } from 'src/shared/libs';
 import { Category } from '../products.entity';
 
 export class UpdateProductDto {
@@ -30,6 +30,7 @@ export class UpdateProductDto {
   @Max(999999)
   @IsPositive()
   @IsNumber()
+  @ParseNumber()
   @IsOptional()
   price?: number;
 
@@ -37,8 +38,11 @@ export class UpdateProductDto {
   @IsPositive()
   @IsInt()
   @IsNumber()
+  @ParseNumber()
   @IsOptional()
   quantity?: number;
+
+  images: string[];
 
   @ApiProperty({ required: false, enum: Category, enumName: 'Category' })
   @IsEnum(Category)

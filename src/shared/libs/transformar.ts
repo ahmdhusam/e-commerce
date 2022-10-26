@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { isNumber, isString } from 'class-validator';
+import { isNumber, isNumberString, isString } from 'class-validator';
 import * as sanitize from 'sanitize-html';
 
 export const Trim = (): PropertyDecorator => Transform(({ value }) => (isString(value) ? value.trim() : value));
@@ -12,3 +12,6 @@ export const ParsePrice = (): PropertyDecorator =>
 
 export const SanitizeHTML = (): PropertyDecorator =>
   Transform(({ value }) => (isString(value) ? sanitize(value) : value));
+
+export const ParseNumber = (): PropertyDecorator =>
+  Transform(({ value }) => (isNumberString(value) ? Number(value) : value));

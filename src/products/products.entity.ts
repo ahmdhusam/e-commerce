@@ -39,6 +39,9 @@ export class Product extends BaseEntity {
   @Column({ type: 'smallint', unsigned: true, default: 0 })
   inOrder: number;
 
+  @Column({ type: 'simple-array' })
+  images: string[] = [];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
