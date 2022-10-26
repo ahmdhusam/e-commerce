@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ImagesService } from 'src/shared/services';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { ProductDataDto } from './dtos';
@@ -8,7 +9,10 @@ import { Product } from './products.entity';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectRepository(Product) private readonly productsRepo: Repository<Product>) {}
+  constructor(
+    @InjectRepository(Product) private readonly productsRepo: Repository<Product>,
+    private readonly imagesService: ImagesService,
+  ) {}
 
   create(author: User, productData: ProductDataDto): Promise<Product> {
     return this.productsRepo.create({ ...productData, author }).save();
@@ -25,6 +29,8 @@ export class ProductsService {
   async update(user: User, productId: string, productData: Omit<UpdateProductDto, 'id'>): Promise<Product> {
     const product = await this.getOneById(productId);
     this.isAuthorized(user, product);
+
+    if (productData.images) await this.deleteImages(product.images);
 
     Object.assign(product, productData);
     return product.save();
@@ -56,11 +62,16 @@ export class ProductsService {
     this.isAuthorized(user, product);
 
     await product.remove();
+    await this.deleteImages(product.images);
 
     return product;
   }
 
-  isAuthorized(user: User, product: Product): void {
+  private async deleteImages(imagesPath: string[]): Promise<void> {
+    await Promise.all(imagesPath.map(imagePath => this.imagesService.deleteImage(imagePath)));
+  }
+
+  private isAuthorized(user: User, product: Product): void {
     if (product.author.id !== user.id) throw new UnauthorizedException();
   }
 
