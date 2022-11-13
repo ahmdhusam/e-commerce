@@ -18,7 +18,6 @@ import { OrdersService } from './orders.service';
 
 @ApiTags('orders')
 @ApiBearerAuth()
-@UseSerialize(MessageSerializeDto)
 @UseAuthGuard()
 @Controller('orders')
 export class OrdersController {
@@ -26,6 +25,7 @@ export class OrdersController {
 
   @ApiOkResponse({ description: 'The record has been successfully created', type: () => MessageSerializeDto })
   @ApiBadRequestResponse({ description: 'Bad Request.' })
+  @UseSerialize(MessageSerializeDto)
   @Post('checkout')
   async checkout(@CurrentUser() currentUser: User, @Body() orderData: CreateOrderDto): Promise<MessageSerializeDto> {
     await this.ordersService.checkout(currentUser, orderData);
@@ -42,6 +42,7 @@ export class OrdersController {
   @ApiOkResponse({ description: 'The record has been successfully deleted', type: () => MessageSerializeDto })
   @ApiNotFoundResponse({ description: 'Order Not Found.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized.' })
+  @UseSerialize(MessageSerializeDto)
   @Delete(':orderId')
   async deleteOrder(
     @CurrentUser() currentUser: User,

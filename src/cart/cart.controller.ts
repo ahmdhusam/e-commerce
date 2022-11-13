@@ -28,7 +28,6 @@ import { CartOptionsDto } from './dtos';
 
 @ApiTags('cart')
 @ApiBearerAuth()
-@UseSerialize(MessageSerializeDto)
 @UseAuthGuard()
 @Controller('cart')
 export class CartController {
@@ -41,6 +40,7 @@ export class CartController {
   @ApiNotFoundResponse({ description: 'Product Not Found' })
   @ApiBadRequestResponse({ description: 'the quantity should be smaller than the quantity of the product' })
   @ApiParam({ name: 'productId', type: 'UUIDv4' })
+  @UseSerialize(MessageSerializeDto)
   @Get('add/:productId')
   async addToCart(
     @CurrentUser() currentUser: User,
@@ -59,6 +59,7 @@ export class CartController {
   })
   @ApiNotFoundResponse({ description: 'Product Not Found' })
   @ApiParam({ name: 'productId', type: 'UUIDv4' })
+  @UseSerialize(MessageSerializeDto)
   @Get('reverse/:productId')
   async reverseFromCart(
     @CurrentUser() currentUser: User,
@@ -86,6 +87,7 @@ export class CartController {
     type: () => MessageSerializeDto,
   })
   @ApiParam({ name: 'productId', type: 'UUIDv4' })
+  @UseSerialize(MessageSerializeDto)
   @Delete(':productId')
   async delete(
     @CurrentUser() currentUser: User,
