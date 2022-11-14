@@ -7,6 +7,7 @@ import { User } from 'src/users/users.entity';
 import Stripe from 'stripe';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos';
+import { IOrders } from './interfaces/orders.interface';
 import { Orders } from './orders.entity';
 import { PaymentsService } from './services/payments.service';
 
@@ -53,24 +54,18 @@ export class OrdersService {
       });
   }
 
-  async getOrders(owner: User): Promise<Orders[]> {
-    const orders = await this.ordersRepo
+  async getOrders(owner: User): Promise<IOrders[]> {
+    const orders: IOrders[] = (await this.ordersRepo
       .createQueryBuilder('orders')
       .select(['orders'])
       .addSelect(['product.id', 'product.title', 'product.description', 'product.price'])
       .innerJoinAndMapMany('orders.products', 'orders.cart', 'cart')
       .innerJoin('cart.product', 'product')
       .where('orders."ownerId" = :ownerId', { ownerId: owner.id })
-      .getMany();
+      .getMany()) as IOrders[];
 
-    await new Promise(r => {
-      orders.forEach(order => {
-        // @ts-ignore
-        for (const cartItem of order.products!) {
-          Object.assign(cartItem, cartItem.product);
-        }
-      });
-      r(true);
+    orders.forEach(order => {
+      order.products = order.products.map(cartItem => Object.assign(cartItem, cartItem.product));
     });
 
     return orders;
