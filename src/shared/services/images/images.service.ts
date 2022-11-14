@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 import * as sharp from 'sharp';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class ImagesService {
@@ -24,7 +25,7 @@ export class ImagesService {
   }
 
   private generateImageName(): string {
-    return `${new Date().toISOString().replace(/[:]|[.]/g, '-')}-${Date.now().toString(36)}.jpeg`;
+    return `${new Date().toISOString().replace(/[:]|[.]/g, '-')}-${crypto.randomUUID()}.jpeg`;
   }
 
   private saveImage(imageBuffer: Buffer, imageName: string): Promise<sharp.OutputInfo> {
